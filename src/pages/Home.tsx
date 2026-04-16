@@ -5,7 +5,6 @@ import { postAPI } from "../services/api";
 import { dummyPosts } from "../utils/dummyData";
 import Loader from "../components/common/Loader";
 
-// Define Post type locally
 interface Post {
   _id: string;
   title: string;
@@ -27,6 +26,24 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     fetchPosts();
+
+    // Listen for comment updates from localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "commentsUpdated") {
+        // Refresh posts to get updated comment counts
+        fetchPosts();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Custom event for same tab
+    window.addEventListener("commentsUpdated", () => fetchPosts());
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("commentsUpdated", () => fetchPosts());
+    };
   }, []);
 
   const fetchPosts = async () => {
@@ -35,7 +52,6 @@ const Home: React.FC = () => {
       if (response.data.data && response.data.data.length > 0) {
         setPosts(response.data.data);
       } else {
-        // Use dummy data if no posts in DB
         setPosts(dummyPosts as Post[]);
         setUsingDummyData(true);
       }
@@ -51,11 +67,13 @@ const Home: React.FC = () => {
   const handleLikeUpdate = (postId: string, newLikes: string[]) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
-        post._id === postId
-          ? { ...post, likes: Array.isArray(newLikes) ? newLikes : [] }
-          : post,
+        post._id === postId ? { ...post, likes: newLikes } : post,
       ),
     );
+  };
+
+  const handleDeletePost = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
   if (loading) {
@@ -92,6 +110,7 @@ const Home: React.FC = () => {
                   key={post._id}
                   post={post}
                   onLikeUpdate={handleLikeUpdate}
+                  onDelete={handleDeletePost}
                 />
               ))}
             </div>

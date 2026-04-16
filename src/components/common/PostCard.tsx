@@ -52,15 +52,30 @@ const PostCard: React.FC<PostCardProps> = ({
     }
 
     setIsLiking(true);
+
+    // Optimistic update - update UI immediately
+    const wasLiked = isLiked;
+    const newLikesArray = wasLiked
+      ? likes.filter((id) => id !== user._id)
+      : [...likes, user._id];
+
+    // Update UI instantly
+    setLikes(newLikesArray);
+
     try {
       const response = await postAPI.like(post._id);
-      // Ensure response data is an array
-      const newLikes = Array.isArray(response.data) ? response.data : [];
-      setLikes(newLikes);
+      const updatedLikes = Array.isArray(response.data)
+        ? response.data
+        : response.data.likes
+          ? response.data.likes
+          : [];
+      setLikes(updatedLikes);
       if (onLikeUpdate) {
-        onLikeUpdate(post._id, newLikes);
+        onLikeUpdate(post._id, updatedLikes);
       }
     } catch (error: any) {
+      // Revert on error
+      setLikes(likes);
       console.error("Like error:", error);
       toast.error(error.response?.data?.message || "Failed to like post");
     } finally {

@@ -32,6 +32,7 @@ interface Post {
     email: string;
   };
   likes: string[];
+  comments?: any[];
   createdAt: string;
 }
 
@@ -56,15 +57,15 @@ const PostDetail: React.FC = () => {
   const fetchPostAndComments = async () => {
     try {
       setLoading(true);
-      // Fetch post
       const postRes = await postAPI.getById(id!);
       const postData = postRes.data.data || postRes.data;
       setPost(postData);
 
-      // Fetch comments
       try {
         const commentsRes = await commentAPI.getByPost(id!);
-        const commentsData = commentsRes.data.data || commentsRes.data || [];
+        let commentsData = commentsRes.data;
+        if (commentsData.data) commentsData = commentsData.data;
+        if (commentsData.comments) commentsData = commentsData.comments;
         setComments(Array.isArray(commentsData) ? commentsData : []);
       } catch (commentError) {
         console.error("Failed to fetch comments:", commentError);
@@ -90,11 +91,23 @@ const PostDetail: React.FC = () => {
     }
 
     setIsLiking(true);
+
+    const wasLiked = isLiked;
+    const newLikesArray = wasLiked
+      ? post!.likes.filter((id) => id !== user._id)
+      : [...post!.likes, user._id];
+
+    setPost((prev) => (prev ? { ...prev, likes: newLikesArray } : null));
+
     try {
       const response = await postAPI.like(post!._id);
-      const newLikes = Array.isArray(response.data) ? response.data : [];
-      setPost((prev) => (prev ? { ...prev, likes: newLikes } : null));
+      let updatedLikes = response.data;
+      if (updatedLikes.data) updatedLikes = updatedLikes.data;
+      if (updatedLikes.likes) updatedLikes = updatedLikes.likes;
+      updatedLikes = Array.isArray(updatedLikes) ? updatedLikes : [];
+      setPost((prev) => (prev ? { ...prev, likes: updatedLikes } : null));
     } catch (error: any) {
+      setPost((prev) => (prev ? { ...prev, likes: post!.likes } : null));
       console.error("Like error:", error);
       toast.error(error.response?.data?.message || "Failed to like post");
     } finally {
@@ -103,13 +116,7 @@ const PostDetail: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this post? This action cannot be undone.",
-      )
-    ) {
-      return;
-    }
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
       await postAPI.delete(post!._id);
@@ -134,26 +141,42 @@ const PostDetail: React.FC = () => {
     setSubmittingComment(true);
     try {
       const response = await commentAPI.create(commentText, post!._id);
-      console.log("Comment API Response:", response.data); // Debug log
 
-      // Handle different response structures
-      let newComment;
-      if (response.data.data) {
-        newComment = response.data.data;
-      } else if (response.data.comment) {
-        newComment = response.data.comment;
-      } else {
-        newComment = response.data;
-      }
+      let newComment = response.data;
+      if (newComment.data) newComment = newComment.data;
+      if (newComment.comment) newComment = newComment.comment;
 
-      // Validate comment structure
       if (newComment && newComment._id) {
+        if (!newComment.user && user) {
+          newComment.user = {
+            _id: user._id,
+            name: user.name,
+          };
+        }
+
+        // Update comments state
         setComments((prev) => [newComment, ...prev]);
+
+        // Update post's comment count in state
+        setPost((prev) =>
+          prev
+            ? {
+                ...prev,
+                comments: [...(prev.comments || []), newComment],
+              }
+            : null,
+        );
+
         setCommentText("");
         toast.success("Comment added!");
+
+        // Store in localStorage that comment count needs update on homepage
+        const event = new CustomEvent("commentsUpdated");
+        window.dispatchEvent(event);
+        localStorage.setItem("commentsUpdated", Date.now().toString());
       } else {
         console.error("Invalid comment structure:", newComment);
-        toast.error("Failed to add comment: Invalid response");
+        toast.error("Failed to add comment");
       }
     } catch (error: any) {
       console.error("Comment error:", error);
@@ -169,7 +192,22 @@ const PostDetail: React.FC = () => {
     try {
       await commentAPI.delete(commentId);
       setComments((prev) => prev.filter((c) => c._id !== commentId));
+
+      // Update post's comment count in state
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              comments: (prev.comments || []).filter(
+                (c) => c._id !== commentId,
+              ),
+            }
+          : null,
+      );
+
       toast.success("Comment deleted");
+
+      localStorage.setItem("commentsUpdated", Date.now().toString());
     } catch (error) {
       toast.error("Failed to delete comment");
     }
@@ -185,7 +223,6 @@ const PostDetail: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      {/* Back Button */}
       <button
         onClick={() => navigate("/")}
         className="flex items-center gap-2 text-gray-600 hover:text-teal-600 mb-6 transition-colors"
@@ -193,7 +230,6 @@ const PostDetail: React.FC = () => {
         <FiArrowLeft /> Back to Home
       </button>
 
-      {/* Post Header */}
       <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           {post.title}
@@ -256,13 +292,11 @@ const PostDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Comments Section */}
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
           <FiMessageCircle /> Comments ({comments.length})
         </h2>
 
-        {/* Add Comment Form */}
         {user ? (
           <form onSubmit={handleAddComment} className="mb-8">
             <textarea
@@ -291,7 +325,6 @@ const PostDetail: React.FC = () => {
           </div>
         )}
 
-        {/* Comments List */}
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-8">
             No comments yet. Be the first to comment!

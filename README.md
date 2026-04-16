@@ -99,3 +99,80 @@ cp .env.example .env
 # Start development server
 npm run dev
 ```
+
+## :folder: Project Structure
+
+blog_app_frontend/
+│
+├── src/
+│ ├── components/
+│ │ ├── layout/
+│ │ │ ├── Navbar.tsx # Navigation bar
+│ │ │ ├── Footer.tsx # Footer component
+│ │ │ └── Layout.tsx # Main layout wrapper
+│ │ ├── common/
+│ │ │ ├── PostCard.tsx # Post preview card
+│ │ │ ├── Loader.tsx # Loading spinner
+│ │ │ └── PrivateRoute.tsx # Protected route wrapper
+│ │ └── home/
+│ │ └── Hero.tsx # Hero banner section
+│ │
+│ ├── pages/
+│ │ ├── Home.tsx # Homepage with all posts
+│ │ ├── Login.tsx # Login page
+│ │ ├── Signup.tsx # Registration page
+│ │ ├── CreateBlog.tsx # Create new post
+│ │ ├── EditPost.tsx # Edit existing post
+│ │ ├── PostDetail.tsx # Single post view
+│ │ └── Profile.tsx # User profile page
+│ │
+│ ├── context/
+│ │ └── AuthContext.tsx # Authentication state management
+│ │
+│ ├── services/
+│ │ └── api.ts # API service layer
+│ │
+│ ├── types/
+│ │ └── index.ts # TypeScript interfaces
+│ │
+│ ├── utils/
+│ │ └── dummyData.ts # Sample posts for testing
+│ │
+│ ├── App.tsx # Main app with routes
+│ ├── main.tsx # Entry point
+│ └── index.css # Global styles + Tailwind
+│
+├── public/
+│ └── index.html
+│
+├── .env # Environment variables
+├── .gitignore # Git ignore file
+├── package.json # Dependencies
+├── tailwind.config.js # Tailwind configuration
+├── tsconfig.json # TypeScript configuration
+├── vite.config.ts # Vite configuration
+├── vercel.json # Vercel deployment config
+└── README.md # Documentation
+
+## 🔗 API Integration
+
+The frontend connects to the backend API at VITE_API_URL. All API calls are handled in src/services/api.ts.
+
+| Method     | Endpoint              | Purpose           |
+| ---------- | --------------------- | ----------------- |
+| **POST**   | /api/auth/signup      | User registration |
+| **POST**   | /api/auth/login       | User login        |
+| **GET**    | /api/auth/me          | Get current user  |
+| **GET**    | /api/posts            | Get all posts     |
+| **GET**    | /api/posts/:id        | Get single post   |
+| **POST**   | /api/posts            | Create post       |
+| **PUT**    | /api/posts/:id        | Update post       |
+| **DELETE** | /api/posts/:id        | Delete post       |
+| **PUT**    | /api/posts/:id/like   | Like/unlike post  |
+| **GET**    | /api/comments/:postId | Get post comments |
+| **POST**   | /api/comments         | Add comment       |
+| **DELETE** | /api/comments/:id     | Delete comment    |
+
+## :student: Author
+
+**Harsh Kumar Mishra**

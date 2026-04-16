@@ -1,6 +1,6 @@
 # 📝 BlogSphere - Frontend
 
-A modern, fully-featured blog platform frontend built with **React**, **TypeScript**, and **Tailwind CSS** as a part of Round 2 Assignment from DekNek3D.It Features user authentication, blog post management, likes, comments, and a beautiful responsive UI.
+A modern, fully-featured blog platform frontend built with **React**, **TypeScript**, and **Tailwind CSS** as a part of Round 2 Assignment from DekNek3D. It Features user authentication, blog post management, likes, comments, and a beautiful responsive UI.
 
 ## 🚀 Live Demo
 
@@ -85,16 +85,13 @@ A modern, fully-featured blog platform frontend built with **React**, **TypeScri
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/project-name.git
+git clone https://github.com/Harsh-Kumar-Mishra2006/round2_assignment_backend.git
 
 # Navigate to project
 cd project-name
 
 # Install dependencies
 npm install
-
-# Setup environment
-cp .env.example .env
 
 # Start development server
 npm run dev

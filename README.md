@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# 📝 BlogSphere - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, fully-featured blog platform frontend built with **React**, **TypeScript**, and **Tailwind CSS**. Features user authentication, blog post management, likes, comments, and a beautiful responsive UI.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Frontend:** [https://round2-assignment-frontend.onrender.com](https://round2-assignment-frontend.onrender.com)  
+**Backend API:** [https://round2-assignment-backend.onrender.com](https://round2-assignment-backend.onrender.com)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+### 🔐 Authentication
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- User registration with email & password
+- User login with JWT token
+- Persistent login state (localStorage)
+- Protected routes (cannot access without login)
+- Logout functionality
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📝 Blog Management
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Create** - Write and publish new blog posts
+- **Read** - View all posts on homepage
+- **Read Single** - View full post with all details
+- **Update** - Edit your own posts
+- **Delete** - Remove your own posts with confirmation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### ❤️ Engagement Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Like/Unlike** - Toggle likes on any post (real-time update)
+- **Comments** - Add comments to any post
+- **Delete Comments** - Remove your own comments
+- **Real-time Updates** - Instant UI feedback without page reload
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 👤 User Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Profile page with user information
+- View all posts written by the user
+- Post statistics (total posts, likes received)
+
+### 🎨 UI/UX
+
+- Beautiful gradient design (Teal/Cyan/Rose theme)
+- Fully responsive (mobile, tablet, desktop)
+- Loading states with spinners
+- Toast notifications for success/error messages
+- Confirmation dialogs for destructive actions
+- Smooth animations and hover effects
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology              | Purpose                 |
+| ----------------------- | ----------------------- |
+| **React 18**            | UI framework            |
+| **TypeScript**          | Type safety             |
+| **Vite**                | Build tool & dev server |
+| **Tailwind CSS**        | Styling                 |
+| **React Router DOM v6** | Client-side routing     |
+| **Axios**               | HTTP requests           |
+| **React Hot Toast**     | Notifications           |
+| **React Icons**         | Icon library            |
+
+---
+
+## 📁 Project Structure

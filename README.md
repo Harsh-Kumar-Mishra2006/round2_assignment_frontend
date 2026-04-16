@@ -9,6 +9,15 @@ A modern, fully-featured blog platform frontend built with **React**, **TypeScri
 
 ---
 
+## :camera: Screensort
+
+![Screensort_1](screensort_1.png)
+![Screensort_2](screensort_2.png)
+![Screensort_3](screensort_3.png)
+![Screensort_4](screensort_4.png)
+
+---
+
 ## ✨ Features
 
 ### 🔐 Authentication
@@ -64,4 +73,29 @@ A modern, fully-featured blog platform frontend built with **React**, **TypeScri
 | **React Hot Toast**     | Notifications           |
 | **React Icons**         | Icon library            |
 
----
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- MongoDB (local or Atlas)
+
+### One-Click Setup
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/project-name.git
+
+# Navigate to project
+cd project-name
+
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+
+# Start development server
+npm run dev
+```

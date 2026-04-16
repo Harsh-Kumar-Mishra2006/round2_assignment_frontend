@@ -1,6 +1,6 @@
 # 📝 BlogSphere - Frontend
 
-A modern, fully-featured blog platform frontend built with **React**, **TypeScript**, and **Tailwind CSS**. Features user authentication, blog post management, likes, comments, and a beautiful responsive UI.
+A modern, fully-featured blog platform frontend built with **React**, **TypeScript**, and **Tailwind CSS** as a part of Round 2 Assignment from DekNek3D.It Features user authentication, blog post management, likes, comments, and a beautiful responsive UI.
 
 ## 🚀 Live Demo
 
@@ -65,5 +65,3 @@ A modern, fully-featured blog platform frontend built with **React**, **TypeScri
 | **React Icons**         | Icon library            |
 
 ---
-
-## 📁 Project Structure

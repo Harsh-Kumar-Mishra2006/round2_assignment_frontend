@@ -50,9 +50,19 @@ export const postAPI = {
 };
 
 export const commentAPI = {
-  getByPost: (postId: string) => api.get(`/comments/${postId}`),
-  create: (text: string, postId: string) =>
-    api.post('/comments', { text, postId }),
+  getByPost: async (postId: string) => {
+    const response = await api.get(`/comments/${postId}`);
+    // Handle nested response structure
+    if (response.data.data) {
+      return { data: response.data.data };
+    }
+    return response;
+  },
+  create: async (text: string, postId: string) => {
+    const response = await api.post('/comments', { text, postId });
+    // Return consistent structure
+    return { data: response.data.data || response.data };
+  },
   delete: (id: string) => api.delete(`/comments/${id}`),
 };
 

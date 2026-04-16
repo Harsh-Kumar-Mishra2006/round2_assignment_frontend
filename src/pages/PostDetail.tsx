@@ -134,14 +134,26 @@ const PostDetail: React.FC = () => {
     setSubmittingComment(true);
     try {
       const response = await commentAPI.create(commentText, post!._id);
-      const newComment = response.data;
-      // Ensure comment has proper structure
-      if (newComment && newComment.user) {
+      console.log("Comment API Response:", response.data); // Debug log
+
+      // Handle different response structures
+      let newComment;
+      if (response.data.data) {
+        newComment = response.data.data;
+      } else if (response.data.comment) {
+        newComment = response.data.comment;
+      } else {
+        newComment = response.data;
+      }
+
+      // Validate comment structure
+      if (newComment && newComment._id) {
         setComments((prev) => [newComment, ...prev]);
         setCommentText("");
         toast.success("Comment added!");
       } else {
-        throw new Error("Invalid comment response");
+        console.error("Invalid comment structure:", newComment);
+        toast.error("Failed to add comment: Invalid response");
       }
     } catch (error: any) {
       console.error("Comment error:", error);

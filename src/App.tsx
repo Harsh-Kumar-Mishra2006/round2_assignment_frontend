@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateBlog from "./pages/CreateBlog";
 import Profile from "./pages/Profile";
+import PostDetail from "./pages/PostDetail";
+import EditPost from "./pages/EditPost";
 
 function App() {
   return (
@@ -19,11 +21,20 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/post/:id" element={<PostDetail />} />
             <Route
               path="/create"
               element={
                 <PrivateRoute>
                   <CreateBlog />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <PrivateRoute>
+                  <EditPost />
                 </PrivateRoute>
               }
             />

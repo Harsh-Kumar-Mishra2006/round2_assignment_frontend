@@ -48,20 +48,35 @@ const PostDetail: React.FC = () => {
   const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
-    fetchPostAndComments();
+    if (id) {
+      fetchPostAndComments();
+    }
   }, [id]);
 
   const fetchPostAndComments = async () => {
     try {
-      const [postRes, commentsRes] = await Promise.all([
-        postAPI.getById(id!),
-        commentAPI.getByPost(id!),
-      ]);
-      setPost(postRes.data.data || postRes.data);
-      setComments(commentsRes.data.data || commentsRes.data || []);
-    } catch (error) {
+      setLoading(true);
+      // Fetch post
+      const postRes = await postAPI.getById(id!);
+      const postData = postRes.data.data || postRes.data;
+      setPost(postData);
+
+      // Fetch comments
+      try {
+        const commentsRes = await commentAPI.getByPost(id!);
+        const commentsData = commentsRes.data.data || commentsRes.data || [];
+        setComments(Array.isArray(commentsData) ? commentsData : []);
+      } catch (commentError) {
+        console.error("Failed to fetch comments:", commentError);
+        setComments([]);
+      }
+    } catch (error: any) {
       console.error("Failed to fetch post:", error);
-      toast.error("Post not found");
+      if (error.response?.status === 404) {
+        toast.error("Post not found");
+      } else {
+        toast.error("Failed to load post");
+      }
       navigate("/");
     } finally {
       setLoading(false);
@@ -77,9 +92,11 @@ const PostDetail: React.FC = () => {
     setIsLiking(true);
     try {
       const response = await postAPI.like(post!._id);
-      setPost((prev) => (prev ? { ...prev, likes: response.data } : null));
-    } catch (error) {
-      toast.error("Failed to like post");
+      const newLikes = Array.isArray(response.data) ? response.data : [];
+      setPost((prev) => (prev ? { ...prev, likes: newLikes } : null));
+    } catch (error: any) {
+      console.error("Like error:", error);
+      toast.error(error.response?.data?.message || "Failed to like post");
     } finally {
       setIsLiking(false);
     }
@@ -117,11 +134,18 @@ const PostDetail: React.FC = () => {
     setSubmittingComment(true);
     try {
       const response = await commentAPI.create(commentText, post!._id);
-      setComments((prev) => [response.data, ...prev]);
-      setCommentText("");
-      toast.success("Comment added!");
-    } catch (error) {
-      toast.error("Failed to add comment");
+      const newComment = response.data;
+      // Ensure comment has proper structure
+      if (newComment && newComment.user) {
+        setComments((prev) => [newComment, ...prev]);
+        setCommentText("");
+        toast.success("Comment added!");
+      } else {
+        throw new Error("Invalid comment response");
+      }
+    } catch (error: any) {
+      console.error("Comment error:", error);
+      toast.error(error.response?.data?.message || "Failed to add comment");
     } finally {
       setSubmittingComment(false);
     }
@@ -142,8 +166,10 @@ const PostDetail: React.FC = () => {
   if (loading) return <Loader />;
   if (!post) return <div className="text-center py-12">Post not found</div>;
 
-  const isAuthor = user?._id === post.author._id;
-  const isLiked = user ? post.likes.includes(user._id) : false;
+  const isAuthor = user?._id === post.author?._id;
+  const isLiked =
+    user && Array.isArray(post.likes) ? post.likes.includes(user._id) : false;
+  const likesCount = Array.isArray(post.likes) ? post.likes.length : 0;
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -164,10 +190,12 @@ const PostDetail: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-4 mb-6 pb-6 border-b">
           <div className="flex items-center gap-3">
             <div className="bg-gradient-to-r from-teal-600 to-cyan-600 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
-              {post.author.name.charAt(0).toUpperCase()}
+              {post.author?.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div>
-              <p className="font-semibold text-gray-800">{post.author.name}</p>
+              <p className="font-semibold text-gray-800">
+                {post.author?.name || "Unknown Author"}
+              </p>
               <p className="text-sm text-gray-500">
                 {new Date(post.createdAt).toLocaleDateString()}
               </p>
@@ -186,7 +214,7 @@ const PostDetail: React.FC = () => {
             >
               <FiHeart className={isLiked ? "fill-white" : ""} />
               <span>
-                {post.likes.length} {post.likes.length === 1 ? "Like" : "Likes"}
+                {likesCount} {likesCount === 1 ? "Like" : "Likes"}
               </span>
             </button>
 
@@ -267,7 +295,7 @@ const PostDetail: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="font-semibold text-gray-800">
-                        {comment.user.name}
+                        {comment.user?.name || "Unknown User"}
                       </span>
                       <span className="text-xs text-gray-400">
                         {new Date(comment.createdAt).toLocaleDateString()}
@@ -275,7 +303,7 @@ const PostDetail: React.FC = () => {
                     </div>
                     <p className="text-gray-600">{comment.text}</p>
                   </div>
-                  {user?._id === comment.user._id && (
+                  {user?._id === comment.user?._id && (
                     <button
                       onClick={() => handleDeleteComment(comment._id)}
                       className="text-gray-400 hover:text-rose-500 transition-colors"

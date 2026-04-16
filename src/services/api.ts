@@ -21,6 +21,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const authAPI = {
   signup: (name: string, email: string, password: string) =>
     api.post('/auth/signup', { name, email, password }),

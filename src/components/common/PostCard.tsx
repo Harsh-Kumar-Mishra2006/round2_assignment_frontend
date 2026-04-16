@@ -20,7 +20,7 @@ interface Post {
     name: string;
     email: string;
   };
-  likes: string[];
+  likes: string[] | any;
   comments?: any[];
   createdAt: string;
 }
@@ -38,7 +38,10 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   const { user } = useAuth();
   const [isLiking, setIsLiking] = useState(false);
-  const [likes, setLikes] = useState(post.likes || []);
+  // Ensure likes is always an array
+  const [likes, setLikes] = useState<string[]>(
+    Array.isArray(post.likes) ? post.likes : [],
+  );
   const isLiked = user ? likes.includes(user._id) : false;
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -51,12 +54,15 @@ const PostCard: React.FC<PostCardProps> = ({
     setIsLiking(true);
     try {
       const response = await postAPI.like(post._id);
-      setLikes(response.data);
+      // Ensure response data is an array
+      const newLikes = Array.isArray(response.data) ? response.data : [];
+      setLikes(newLikes);
       if (onLikeUpdate) {
-        onLikeUpdate(post._id, response.data);
+        onLikeUpdate(post._id, newLikes);
       }
-    } catch (error) {
-      toast.error("Failed to like post");
+    } catch (error: any) {
+      console.error("Like error:", error);
+      toast.error(error.response?.data?.message || "Failed to like post");
     } finally {
       setIsLiking(false);
     }
@@ -89,13 +95,12 @@ const PostCard: React.FC<PostCardProps> = ({
         <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <FiUser className="text-teal-500" />
-            <span>{post.author.name}</span>
+            <span>{post.author?.name || "Unknown Author"}</span>
             <span>•</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </div>
 
-          {/* Edit/Delete buttons - only for author */}
-          {user && user._id === post.author._id && (
+          {user && user._id === post.author?._id && (
             <div className="flex items-center gap-2">
               <Link
                 to={`/edit/${post._id}`}
@@ -117,7 +122,7 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
 
         <p className="text-gray-600 mb-4 line-clamp-3">
-          {post.content.substring(0, 150)}...
+          {post.content?.substring(0, 150) || ""}...
         </p>
 
         <div className="flex items-center justify-between">
@@ -138,7 +143,9 @@ const PostCard: React.FC<PostCardProps> = ({
               className="flex items-center gap-1 text-gray-500 hover:text-teal-600"
             >
               <FiMessageCircle />
-              <span>{post.comments?.length || 0}</span>
+              <span>
+                {Array.isArray(post.comments) ? post.comments.length : 0}
+              </span>
             </Link>
           </div>
 

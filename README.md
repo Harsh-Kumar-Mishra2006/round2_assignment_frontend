@@ -85,7 +85,7 @@ A modern, fully-featured blog platform frontend built with **React**, **TypeScri
 
 ```bash
 # Clone repository
-git clone https://github.com/Harsh-Kumar-Mishra2006/round2_assignment_backend.git
+git clone https://github.com/Harsh-Kumar-Mishra2006/round2_assignment_frontend.git
 
 # Navigate to project
 cd project-name

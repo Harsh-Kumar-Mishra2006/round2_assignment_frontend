@@ -118,4 +118,4 @@ The frontend connects to the backend API at VITE_API_URL. All API calls are hand
 
 ## :student: Author
 
-**Harsh Kumar Mishra**
+## **Harsh Kumar Mishra**

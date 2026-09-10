@@ -30,11 +30,15 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
+  //signup
   signup: (name: string, email: string, password: string) =>
     api.post('/auth/signup', { name, email, password }),
+  //login
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
-  getMe: () => api.get('/auth/me'),
+  //get current user
+  getMe: () => 
+    api.get('/auth/me'),
 };
 
 export const postAPI = {

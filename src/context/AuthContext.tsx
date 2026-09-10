@@ -1,21 +1,22 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { authAPI } from "../services/api";
 import toast from "react-hot-toast";
+import { type User, type AuthContextType } from "../types/index";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  token?: string;
-}
+// interface User {
+//   _id: string;
+//   name: string;
+//   email: string;
+//   token?: string;
+// }
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
+// interface AuthContextType {
+//   user: User | null;
+//   loading: boolean;
+//   login: (email: string, password: string) => Promise<void>;
+//   signup: (name: string, email: string, password: string) => Promise<void>;
+//   logout: () => void;
+// }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const { token, ...userData } = response.data;
       localStorage.setItem("token", token);
       setUser(userData);
-      toast.success("Logged in successfully! 🎉");
+      toast.success("Logged in successfully! ");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Login failed");
       throw error;

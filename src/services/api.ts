@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -60,7 +59,6 @@ export const commentAPI = {
   },
   create: async (text: string, postId: string) => {
     const response = await api.post('/comments', { text, postId });
-    // Return consistent structure
     return { data: response.data.data || response.data };
   },
   delete: (id: string) => api.delete(`/comments/${id}`),
